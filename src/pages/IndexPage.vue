@@ -15,9 +15,6 @@
       <q-btn outline color="primary" size="lg" label="Crear Compte" icon="person_add" to="/register" class="full-width"
         rounded />
 
-      <q-btn flat color="grey-8" label="Veure els meus golejadors" icon="arrow_forward" to="/llista"
-        class="full-width q-mt-sm" />
-
     </div>
   </q-page>
 </template>

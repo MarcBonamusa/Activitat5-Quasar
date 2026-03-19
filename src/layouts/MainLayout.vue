@@ -39,6 +39,16 @@
 
         <q-separator q-my-md />
 
+        <q-item clickable v-ripple to="/login">
+          <q-item-section avatar>
+            <q-icon name="login" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Iniciar Sessió</q-item-label>
+            <q-item-label caption>Accedir al teu compte</q-item-label>
+          </q-item-section>
+        </q-item>
+
         <q-item clickable v-ripple to="/register">
           <q-item-section avatar>
             <q-icon name="person_add" />
@@ -51,13 +61,14 @@
 
         <q-item clickable v-ripple to="/login">
           <q-item-section avatar>
-            <q-icon name="login"/>
+            <q-icon name="logout" color="red"/>
           </q-item-section>
           <q-item-section>
-            <q-item-label>Iniciar Sessió</q-item-label>
-            <q-item-label caption>Accedir al teu compte</q-item-label>
+            <q-item-label class="text-red">Tancar Sessió</q-item-label>
+            <q-item-label caption class="text-red">Tancar sessió del compte</q-item-label>
           </q-item-section>
         </q-item>
+
       </q-list>
     </q-drawer>
 
