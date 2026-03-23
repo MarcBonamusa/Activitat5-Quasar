@@ -28,16 +28,16 @@
                         <q-icon name="lock" color="primary" />
                     </template>
                     <template v-slot:append>
-                        <q-icon :name="isPasswordVisible ? 'visibility_off' : 'visibility'" class="cursor-pointer text-grey-6"
-                            @click="isPasswordVisible = !isPasswordVisible" />
+                        <q-icon :name="isPasswordVisible ? 'visibility_off' : 'visibility'"
+                            class="cursor-pointer text-grey-6" @click="isPasswordVisible = !isPasswordVisible" />
                     </template>
                 </q-input>
 
-                <q-btn color="primary" size="lg" label="Registra't" class="full-width q-mt-md text-weight-bold"
-                    rounded unelevated @click="handleRegister" />
+                <q-btn color="primary" size="lg" label="Registra't" class="full-width q-mt-md text-weight-bold" rounded
+                    unelevated @click="handleRegister" />
 
-                <q-btn flat color="primary" size="md" label="Ja tens compte? Entra" to="/login"
-                    class="full-width" rounded />
+                <q-btn flat color="primary" size="md" label="Ja tens compte? Entra" to="/login" class="full-width"
+                    rounded />
 
             </div>
         </q-card>
@@ -47,6 +47,12 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useQuasar } from 'quasar'
+import { api } from 'boot/axios'
+
+const router = useRouter()
+const $q = useQuasar()
 
 const name = ref('')
 const email = ref('')
@@ -54,7 +60,36 @@ const password = ref('')
 const isPasswordVisible = ref(false)
 
 const handleRegister = async () => {
-    console.log('Intentant crear compte amb:', name.value, email.value, password.value)
+    try {
+        const response = await api.post('/auth/register', {
+            name: name.value,
+            email: email.value,
+            password: password.value
+        })
+
+        console.log('Registre correcte:', response.data)
+
+        $q.notify({
+            color: 'positive',
+            icon: 'check',
+            message: 'Compte creat i sessió iniciada!',
+            position: 'top'
+        })
+
+        router.push('/llista')
+
+    } catch (error) {
+        console.error('Error al registrar:', error)
+
+        const errorMessage = error.response?.data?.statusMessage || 'Error al crear el compte'
+
+        $q.notify({
+            color: 'negative',
+            icon: 'warning',
+            message: errorMessage,
+            position: 'top'
+        })
+    }
 }
 </script>
 

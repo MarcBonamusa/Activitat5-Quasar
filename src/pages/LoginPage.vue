@@ -41,13 +41,47 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useQuasar } from 'quasar'
+import { api } from 'boot/axios'
+
+const router = useRouter()
+const $q = useQuasar()
 
 const email = ref('')
 const password = ref('')
 const isPasswordVisible = ref(false)
 
 const handleLogin = async () => {
-   console.log('Intentant fer login amb:', email.value, password.value)
+  try {
+    const response = await api.post('/auth/login', {
+      email: email.value,
+      password: password.value
+    })
+
+    console.log('Login exitoso:', response.data)
+
+    $q.notify({
+      color: 'positive',
+      icon: 'check',
+      message: '¡Sessió iniciada correctament!',
+      position: 'top'
+    })
+
+    router.push('/llista')
+
+  } catch (error) {
+    console.error('Error al iniciar sesión:', error)
+    
+    const errorMessage = error.response?.data?.statusMessage || 'Correu o contrasenya incorrectes'
+    
+    $q.notify({
+      color: 'negative',
+      icon: 'warning',
+      message: errorMessage,
+      position: 'top'
+    })
+  }
 }
 </script>
 

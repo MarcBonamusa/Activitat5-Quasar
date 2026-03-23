@@ -8,12 +8,10 @@ const routes = [
       { path: '/login', component: () => import('pages/LoginPage.vue') },
       { path: '/llista', component: () => import('pages/ResourceListPage.vue') },
       { path: "/crear", component: () => import('pages/AddPage.vue') },
-      { path: "/editar", component: () => import('pages/EditPage.vue') }
+      { path: "/editar/:id", component: () => import('pages/EditPage.vue') }
     ]
   },
 
-  // Always leave this as last one,
-  // but you can also remove it
   {
     path: '/:catchAll(.*)*',
     component: () => import('pages/ErrorNotFound.vue')

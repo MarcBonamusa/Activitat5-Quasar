@@ -8,42 +8,28 @@
             </h1>
         </div>
 
-        <div class="full-width q-gutter-y-md" style="max-width: 400px;">
-            
-            <q-card 
-                v-for="golejador in arrayGolejadors" 
-                :key="golejador.id" 
-                class="golejador-card shadow-4"
-            >
-                <q-item class="q-pa-md">
-                    
-                    <q-item-section avatar>
-                        <q-avatar color="primary" text-color="white" icon="person" />
-                    </q-item-section>
+        <div v-if="loading" class="flex flex-center q-pa-xl">
+            <q-spinner-dots color="primary" size="40px" />
+        </div>
 
-                    <q-item-section>
-                        <q-item-label class="text-weight-bold text-subtitle1 text-grey-9">
-                            {{ golejador.name }}
-                        </q-item-label>
-                        
-                        <q-item-label caption class="text-grey-7 q-mt-xs flex items-center">
-                            Equip: {{ golejador.team }}
-                        </q-item-label>
-                        
-                        <q-item-label caption class="q-mt-xs">
-                            Gols: <q-badge color="secondary" rounded class="q-ml-xs">{{ golejador.gols }}</q-badge>
-                        </q-item-label>
-                    </q-item-section>
+        <q-card v-for="golejador in golejadors" :key="golejador.id" class="q-mb-md">
+            <q-item>
+                <q-item-section>
+                    <q-item-label class="text-h6">{{ golejador.name }}</q-item-label>
+                    <q-item-label caption>Equip: {{ golejador.team }} | Gols: {{ golejador.goals }}</q-item-label>
+                </q-item-section>
 
-                    <q-item-section side>
-                        <div class="row q-gutter-y-xs">
-                            <q-btn flat round dense color="primary" icon="edit" to="/editar"/>
-                            <q-btn flat round dense color="negative" icon="delete" />
-                        </div>
-                    </q-item-section>
-                    
-                </q-item>
-            </q-card>
+                <q-item-section side>
+                    <div class="row q-gutter-xs">
+                        <q-btn flat round color="negative" icon="delete" @click="deleteGolejador(golejador.id)" />
+                        <q-btn flat round color="primary" icon="edit" :to="`/editar/${golejador.id}`" />
+                    </div>
+                </q-item-section>
+            </q-item>
+        </q-card>
+
+        <div v-if="!loading && golejadors.length === 0" class="text-center q-pa-md text-grey">
+            No hi ha golejadors a la base de dades.
         </div>
 
         <q-page-sticky position="bottom-right" :offset="[18, 18]">
@@ -54,11 +40,64 @@
 </template>
 
 <script setup>
-const arrayGolejadors = [
-    { id: 1, name: "Lamine Yamal", team: "Barcelona", gols: 15 },
-    { id: 2, name: "Robert Lewandowski", team: "Barcelona", gols: 10 },
-    { id: 3, name: "Raphinha", team: "Barcelona", gols: 8 }
-]
+import { ref, onMounted } from 'vue'
+import { useQuasar } from 'quasar'
+import { api } from 'boot/axios'
+
+const $q = useQuasar()
+const golejadors = ref([]) // Aquí guardaremos los datos de la API
+const loading = ref(true)
+
+// 1. Función para obtener los goleadores del backend (Nuxt)
+const fetchGolejadors = async () => {
+    try {
+        loading.value = true
+        // Esta petición ya enviará la cookie de sesión automáticamente
+        const response = await api.get('/api/golejadors')
+        golejadors.value = response.data
+    } catch (error) {
+        console.error('Error al carregar golejadors:', error)
+        $q.notify({
+            color: 'negative',
+            message: 'No s\'han pogut carregar els golejadors. Estàs loguejat?',
+            icon: 'report_problem'
+        })
+    } finally {
+        loading.value = false
+    }
+}
+
+// 2. Función para borrar un goleador
+const deleteGolejador = async (id) => {
+    $q.dialog({
+        title: 'Confirmar',
+        message: 'Segur que vols eliminar aquest golejador?',
+        cancel: true,
+        persistent: true
+    }).onOk(async () => {
+        try {
+            await api.delete(`/api/golejadors/${id}`)
+            $q.notify({
+                color: 'positive',
+                message: 'Golejador eliminat',
+                icon: 'delete'
+            })
+            // Recargamos la lista después de borrar
+            fetchGolejadors()
+        } catch {
+            $q.notify({
+                color: 'negative',
+                message: 'Error en eliminar',
+                icon: 'error'
+            })
+        }
+    })
+}
+
+// Ejecutamos la carga al entrar en la página
+onMounted(() => {
+    fetchGolejadors()
+})
 </script>
 
 <style scoped>
