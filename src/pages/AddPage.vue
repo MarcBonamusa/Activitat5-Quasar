@@ -29,8 +29,8 @@
                 </q-input>
 
                 <div class="q-mt-md column q-gutter-y-sm">
-                    <q-btn color="primary" size="lg" label="Guardar" class="full-width text-weight-bold"
-                        rounded unelevated @click="handleSave" />
+                    <q-btn color="primary" size="lg" label="Guardar" class="full-width text-weight-bold" rounded
+                        unelevated @click="handleSave" :loading="loading" />
 
                     <q-btn flat color="negative" size="md" label="Cancel·lar" class="full-width" rounded
                         @click="goBack" />
@@ -45,8 +45,12 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useQuasar } from 'quasar'
+import { api } from 'boot/axios'
 
 const router = useRouter()
+const $q = useQuasar()
+const loading = ref(false) // Variable para el estado de carga
 
 const form = ref({
     name: '',
@@ -55,8 +59,42 @@ const form = ref({
 })
 
 const handleSave = async () => {
-    console.log('Guardant nou golejador:', form.value)
-    router.push('/golejadors')
+    if (!form.value.name || !form.value.team) {
+        $q.notify({
+            color: 'warning',
+            message: 'Si us plau, omple el nom i l\'equip',
+            icon: 'warning'
+        })
+        return
+    }
+
+    try {
+        loading.value = true // Activamos el spinner del botón
+
+        await api.post('/api/golejadors', {
+            name: form.value.name,
+            team: form.value.team,
+            goals: form.value.goals
+        })
+
+        $q.notify({
+            color: 'positive',
+            message: 'Golejador guardat correctament!',
+            icon: 'check_circle'
+        })
+
+        router.push('/llista')
+
+    } catch (e) {
+        console.error('Error al guardar:', e)
+        $q.notify({
+            color: 'negative',
+            message: 'Error al guardar el golejador',
+            icon: 'error'
+        })
+    } finally {
+        loading.value = false // Desactivamos el spinner
+    }
 }
 
 const goBack = () => {

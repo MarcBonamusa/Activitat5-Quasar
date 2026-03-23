@@ -47,11 +47,9 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { api } from 'boot/axios'
 
-const router = useRouter()
 const $q = useQuasar()
 
 const name = ref('')
@@ -76,7 +74,8 @@ const handleRegister = async () => {
             position: 'top'
         })
 
-        router.push('/llista')
+        window.location.href = '/#/llista'
+        window.location.reload()
 
     } catch (error) {
         console.error('Error al registrar:', error)
