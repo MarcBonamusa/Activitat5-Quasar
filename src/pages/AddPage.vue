@@ -50,7 +50,7 @@ import { api } from 'boot/axios'
 
 const router = useRouter()
 const $q = useQuasar()
-const loading = ref(false) // Variable para el estado de carga
+const loading = ref(false)
 
 const form = ref({
     name: '',
@@ -69,7 +69,7 @@ const handleSave = async () => {
     }
 
     try {
-        loading.value = true // Activamos el spinner del botón
+        loading.value = true
 
         await api.post('/api/golejadors', {
             name: form.value.name,
@@ -93,7 +93,7 @@ const handleSave = async () => {
             icon: 'error'
         })
     } finally {
-        loading.value = false // Desactivamos el spinner
+        loading.value = false
     }
 }
 

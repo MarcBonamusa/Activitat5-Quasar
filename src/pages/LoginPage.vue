@@ -42,9 +42,11 @@
 <script setup>
 import { ref } from 'vue'
 import { useQuasar } from 'quasar'
+import { useRouter } from 'vue-router' 
 import { api } from 'boot/axios'
 
 const $q = useQuasar()
+const router = useRouter()
 
 const email = ref('')
 const password = ref('')
@@ -59,20 +61,25 @@ const handleLogin = async () => {
 
       console.log('Login exitoso:', response.data)
 
+      const token = response.data.token
+      if (token) {
+         localStorage.setItem('mi_token_jwt', token)
+         localStorage.setItem('user_data', JSON.stringify(response.data.user))
+      }
+
       $q.notify({
          color: 'positive',
          icon: 'check',
-         message: '¡Sessió iniciada correctament!',
+         message: 'Sessió iniciada correctament!',
          position: 'top'
       })
 
-      window.location.href = '/#/llista'
-      window.location.reload()
+      router.push('/llista')
 
    } catch (error) {
       console.error('Error al iniciar sesión:', error)
 
-      const errorMessage = error.response?.data?.statusMessage || 'Correu o contrasenya incorrectes'
+      const errorMessage = error.response?.data?.message || error.response?.data?.statusMessage || 'Correu o contrasenya incorrectes'
 
       $q.notify({
          color: 'negative',
