@@ -48,9 +48,11 @@
 <script setup>
 import { ref } from 'vue'
 import { useQuasar } from 'quasar'
+import { useRouter } from 'vue-router'
 import { api } from 'boot/axios'
 
 const $q = useQuasar()
+const router = useRouter()
 
 const name = ref('')
 const email = ref('')
@@ -69,13 +71,12 @@ const handleRegister = async () => {
 
         $q.notify({
             color: 'positive',
-            icon: 'check',
-            message: 'Compte creat i sessió iniciada!',
+            icon: 'check_circle',
+            message: 'Compte creat correctament! Ara inicia sessió.',
             position: 'top'
         })
 
-        window.location.href = '/#/llista'
-        window.location.reload()
+        router.push('/login')
 
     } catch (error) {
         console.error('Error al registrar:', error)
